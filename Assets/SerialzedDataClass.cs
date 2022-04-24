@@ -68,12 +68,13 @@ public class SerialzedDataClass
     public static void SaveToJSON(SerialzedDataClass obj)
     {
         var str = JsonUtility.ToJson(obj, true);
-        System.IO.File.WriteAllText(System.IO.Path.Combine(Application.dataPath, "Data.json"), str);
+        System.IO.File.WriteAllText(System.IO.Path.Combine(Application.dataPath, "Resources/Data.json"), str);
     }
 
     public static SerialzedDataClass LoadFromJSON()
     {
-        var str = System.IO.File.ReadAllText(System.IO.Path.Combine(Application.dataPath, "Data.json"));
-        return JsonUtility.FromJson<SerialzedDataClass>(str);
+        var textAsset = Resources.Load<TextAsset>("Data.json");
+        if (textAsset == null) return null;
+        return JsonUtility.FromJson<SerialzedDataClass>(textAsset.text);
     }
 }

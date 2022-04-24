@@ -67,15 +67,13 @@ public class ScriptableObjectDataClass : ScriptableObject
     public static void SaveToASSET(ScriptableObjectDataClass obj)
     {
 #if UNITY_EDITOR
-        UnityEditor.AssetDatabase.CreateAsset(obj, "Assets/Data.asset");
+        UnityEditor.AssetDatabase.CreateAsset(obj, "Assets/Resources/Data.asset");
         UnityEditor.AssetDatabase.Refresh();
 #endif
     }
 
     public static ScriptableObjectDataClass LoadFromASSET()
     {
-#if UNITY_EDITOR
-        return UnityEditor.AssetDatabase.LoadAssetAtPath<ScriptableObjectDataClass>("Assets/Data.asset");
-#endif
+        return Resources.Load<ScriptableObjectDataClass>("Data.asset");
     }
 }

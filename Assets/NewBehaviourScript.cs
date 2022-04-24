@@ -20,7 +20,7 @@ public class NewBehaviourScript : MonoBehaviour
     [ContextMenu("Create JSON")]
     public void CreateJSON()
     {
-        if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "Data.json"))) System.IO.File.Delete(System.IO.Path.Combine(Application.dataPath, "Data.json"));
+        if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "Resources/Data.json"))) System.IO.File.Delete(System.IO.Path.Combine(Application.dataPath, "Resources/Data.json"));
 
         var data_json = new SerialzedDataClass();
         data_json.CreateDummy();
@@ -36,7 +36,7 @@ public class NewBehaviourScript : MonoBehaviour
     [ContextMenu("Create ASSET")]
     public void CreateASSET()
     {
-        if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "Data.asset"))) System.IO.File.Delete(System.IO.Path.Combine(Application.dataPath, "Data.asset"));
+        if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "Resources/Data.asset"))) System.IO.File.Delete(System.IO.Path.Combine(Application.dataPath, "Resources/Data.asset"));
 
         var data_asset = ScriptableObjectDataClass.CreateInstance<ScriptableObjectDataClass>();
         data_asset.CreateDummy();
@@ -52,7 +52,7 @@ public class NewBehaviourScript : MonoBehaviour
     [ContextMenu("Create XML (XMLDocument)")]
     public void CreateXML1()
     {
-        if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "Data1.xml"))) System.IO.File.Delete(System.IO.Path.Combine(Application.dataPath, "Data1.xml"));
+        if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "Resources/Data1.xml"))) System.IO.File.Delete(System.IO.Path.Combine(Application.dataPath, "Resources/Data1.xml"));
 
         var data_xml = new XmlSerializationDataClass();
         data_xml.CreateDummy();
@@ -68,7 +68,7 @@ public class NewBehaviourScript : MonoBehaviour
     [ContextMenu("Create XML (Serializer)")]
     public void CreateXML2()
     {
-        if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "Data2.xml"))) System.IO.File.Delete(System.IO.Path.Combine(Application.dataPath, "Data2.xml"));
+        if (System.IO.File.Exists(System.IO.Path.Combine(Application.dataPath, "Resources/Data2.xml"))) System.IO.File.Delete(System.IO.Path.Combine(Application.dataPath, "Resources/Data2.xml"));
 
         var data_xml = new XmlSerializationDataClass();
         data_xml.CreateDummy();

@@ -138,55 +138,59 @@ public class XmlSerializationDataClass
             rootNode.AppendChild(skillDataNode);
         }
 
-        xmlDocument.Save(System.IO.Path.Combine(Application.dataPath, "Data1.xml"));
+        xmlDocument.Save(System.IO.Path.Combine(Application.dataPath, "Resources/Data1.xml"));
     }
 
     public static void SaveToXML_Serializer(XmlSerializationDataClass obj)
     {
         var serializer = new System.Xml.Serialization.XmlSerializer(typeof(XmlSerializationDataClass));
-        var stream = new System.IO.FileStream(System.IO.Path.Combine(Application.dataPath, "Data2.xml"), System.IO.FileMode.Create);
+        var stream = new System.IO.FileStream(System.IO.Path.Combine(Application.dataPath, "Resources/Data2.xml"), System.IO.FileMode.Create);
         serializer.Serialize(stream, obj);
         stream.Close();
     }
 
     public static XmlSerializationDataClass LoadFromXML_XMLDocument()
     {
-        var xmlDocument = new System.Xml.XmlDocument();
-        xmlDocument.Load(System.IO.Path.Combine(Application.dataPath, "Data1.xml"));
-
-        var data = new XmlSerializationDataClass();
-
-        foreach (System.Xml.XmlNode node in xmlDocument.ChildNodes)
+        var textAsset = Resources.Load<TextAsset>("Data1.xml");
+        if (textAsset == null) return null;
+        XmlSerializationDataClass data = new XmlSerializationDataClass();
+        using (var stream = new System.IO.MemoryStream(textAsset.bytes))
         {
-            if (node == null) continue;
-            if (node.Name == "Root")
+            var xmlDocument = new System.Xml.XmlDocument();
+            xmlDocument.Load(stream);
+
+            foreach (System.Xml.XmlNode node in xmlDocument.ChildNodes)
             {
-                var rootElement = node as System.Xml.XmlElement;
-                if (rootElement == null) continue;
-
-                data.m_Name = rootElement.GetAttribute("m_Name");
-                data.m_Level = int.Parse(rootElement.GetAttribute("m_Level"));
-                data.Position_Surrogate = rootElement.GetAttribute("m_Position");
-                data.Rotation_Surrogate = rootElement.GetAttribute("m_Rotation");
-                data.m_Height = float.Parse(rootElement.GetAttribute("m_Height"));
-
-                List<XmlSerializationSkillData> skillDataList = new List<XmlSerializationSkillData>();
-                foreach(System.Xml.XmlNode node2 in rootElement.ChildNodes)
+                if (node == null) continue;
+                if (node.Name == "Root")
                 {
-                    if (node2 == null) continue;
-                    if (node2.Name == "SkillData")
-                    {
-                        var skillDataElement = node2 as System.Xml.XmlElement;
-                        if (skillDataElement == null) continue;
+                    var rootElement = node as System.Xml.XmlElement;
+                    if (rootElement == null) continue;
 
-                        var skillData = new XmlSerializationSkillData();
-                        skillData.m_ID = int.Parse(skillDataElement.GetAttribute("m_ID"));
-                        skillData.m_Type = System.Enum.Parse<XmlSerializationSkillType>(skillDataElement.GetAttribute("m_Type"));
-                        skillData.m_Level = int.Parse(skillDataElement.GetAttribute("m_Level"));
-                        skillDataList.Add(skillData);
+                    data.m_Name = rootElement.GetAttribute("m_Name");
+                    data.m_Level = int.Parse(rootElement.GetAttribute("m_Level"));
+                    data.Position_Surrogate = rootElement.GetAttribute("m_Position");
+                    data.Rotation_Surrogate = rootElement.GetAttribute("m_Rotation");
+                    data.m_Height = float.Parse(rootElement.GetAttribute("m_Height"));
+
+                    List<XmlSerializationSkillData> skillDataList = new List<XmlSerializationSkillData>();
+                    foreach (System.Xml.XmlNode node2 in rootElement.ChildNodes)
+                    {
+                        if (node2 == null) continue;
+                        if (node2.Name == "SkillData")
+                        {
+                            var skillDataElement = node2 as System.Xml.XmlElement;
+                            if (skillDataElement == null) continue;
+
+                            var skillData = new XmlSerializationSkillData();
+                            skillData.m_ID = int.Parse(skillDataElement.GetAttribute("m_ID"));
+                            skillData.m_Type = System.Enum.Parse<XmlSerializationSkillType>(skillDataElement.GetAttribute("m_Type"));
+                            skillData.m_Level = int.Parse(skillDataElement.GetAttribute("m_Level"));
+                            skillDataList.Add(skillData);
+                        }
                     }
+                    data.m_Skills = skillDataList.ToArray();
                 }
-                data.m_Skills = skillDataList.ToArray();
             }
         }
 
@@ -195,10 +199,14 @@ public class XmlSerializationDataClass
 
     public static XmlSerializationDataClass LoadFromXML_Serializer()
     {
-        var serializer = new System.Xml.Serialization.XmlSerializer(typeof(XmlSerializationDataClass));
-        var stream = new System.IO.FileStream(System.IO.Path.Combine(Application.dataPath, "Data2.xml"), System.IO.FileMode.Open);
-        var data = serializer.Deserialize(stream) as XmlSerializationDataClass;
-        stream.Close();
+        var textAsset = Resources.Load<TextAsset>("Data2.xml");
+        if (textAsset == null) return null;
+        XmlSerializationDataClass data;
+        using (var stream = new System.IO.MemoryStream(textAsset.bytes))
+        {
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(XmlSerializationDataClass));
+            data = serializer.Deserialize(stream) as XmlSerializationDataClass;
+        }
         return data;
     }
 }
