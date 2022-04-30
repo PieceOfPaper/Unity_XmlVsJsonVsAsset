@@ -67,7 +67,7 @@ public class SerialzedDataClass
 
     public static void SaveToJSON(SerialzedDataClass obj)
     {
-        var str = JsonUtility.ToJson(obj, true);
+        var str = JsonUtility.ToJson(obj, false);
         System.IO.File.WriteAllText(System.IO.Path.Combine(Application.dataPath, "Resources/data_json.json"), str);
     }
 
