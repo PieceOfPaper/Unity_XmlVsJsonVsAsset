@@ -85,8 +85,9 @@ public class NewBehaviourScript : MonoBehaviour
     public void LoadJSON()
     {
         UnityEngine.Profiling.Profiler.BeginSample("Load JSON");
-        var data_json = SerialzedDataClass.LoadFromJSON();
+        var data = SerialzedDataClass.LoadFromJSON();
         UnityEngine.Profiling.Profiler.EndSample();
+        if (data == null) Debug.LogError("Load Fail");
 
         UnityEditor.EditorApplication.isPaused = true;
     }
@@ -95,8 +96,9 @@ public class NewBehaviourScript : MonoBehaviour
     public void LoadASSET()
     {
         UnityEngine.Profiling.Profiler.BeginSample("Load ASSET");
-        var data_asset = ScriptableObjectDataClass.LoadFromASSET();
+        var data = ScriptableObjectDataClass.LoadFromASSET();
         UnityEngine.Profiling.Profiler.EndSample();
+        if (data == null) Debug.LogError("Load Fail");
 
         UnityEditor.EditorApplication.isPaused = true;
     }
@@ -105,8 +107,9 @@ public class NewBehaviourScript : MonoBehaviour
     public void LoadXML1()
     {
         UnityEngine.Profiling.Profiler.BeginSample("Load XML (XMLDocument)");
-        var data_xml1 = XmlSerializationDataClass.LoadFromXML_XMLDocument();
+        var data = XmlSerializationDataClass.LoadFromXML_XMLDocument();
         UnityEngine.Profiling.Profiler.EndSample();
+        if (data == null) Debug.LogError("Load Fail");
 
         UnityEditor.EditorApplication.isPaused = true;
     }
@@ -115,10 +118,111 @@ public class NewBehaviourScript : MonoBehaviour
     public void LoadXML2()
     {
         UnityEngine.Profiling.Profiler.BeginSample("Load XML (Serializer)");
-        var data_xml2 = XmlSerializationDataClass.LoadFromXML_Serializer();
+        var data = XmlSerializationDataClass.LoadFromXML_Serializer();
+        UnityEngine.Profiling.Profiler.EndSample();
+        if (data == null) Debug.LogError("Load Fail");
+
+        UnityEditor.EditorApplication.isPaused = true;
+    }
+
+    [ContextMenu("Build AssetBundle JSON")]
+    public void BuildAssetBundleJSON()
+    {
+        UnityEngine.Profiling.Profiler.BeginSample("Build AssetBundle JSON");
+        SerialzedDataClass.JSONToAssetBundle();
         UnityEngine.Profiling.Profiler.EndSample();
 
         UnityEditor.EditorApplication.isPaused = true;
+        UnityEditor.AssetDatabase.Refresh();
+    }
+
+    [ContextMenu("Build AssetBundle ASSET")]
+    public void BuildAssetBundleASSET()
+    {
+        UnityEngine.Profiling.Profiler.BeginSample("Build AssetBundle ASSET");
+        ScriptableObjectDataClass.ASSETToAssetBundle();
+        UnityEngine.Profiling.Profiler.EndSample();
+
+        UnityEditor.EditorApplication.isPaused = true;
+        UnityEditor.AssetDatabase.Refresh();
+    }
+
+    [ContextMenu("Build AssetBundle XML (XMLDocument)")]
+    public void BuildAssetBundleXML1()
+    {
+        UnityEngine.Profiling.Profiler.BeginSample("Build AssetBundle XML (XMLDocument)");
+        XmlSerializationDataClass.XMLToAssetBundle_XMLDocument();
+        UnityEngine.Profiling.Profiler.EndSample();
+
+        UnityEditor.EditorApplication.isPaused = true;
+        UnityEditor.AssetDatabase.Refresh();
+    }
+
+    [ContextMenu("Build AssetBundle XML (Serializer)")]
+    public void BuildAssetBundleXML2()
+    {
+        UnityEngine.Profiling.Profiler.BeginSample("Build AssetBundle XML (Serializer)");
+        XmlSerializationDataClass.XMLToAssetBundle_Serializer();
+        UnityEngine.Profiling.Profiler.EndSample();
+
+        UnityEditor.EditorApplication.isPaused = true;
+        UnityEditor.AssetDatabase.Refresh();
+    }
+
+    [ContextMenu("Load AssetBundle JSON")]
+    public void LoadAssetBundleJSON()
+    {
+        var assetBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "Resources/assetbundle_json"));
+
+        UnityEngine.Profiling.Profiler.BeginSample("Load AssetBundle JSON");
+        var data = SerialzedDataClass.LoadFromJSONAssetBundle(assetBundle);
+        UnityEngine.Profiling.Profiler.EndSample();
+        if (data == null) Debug.LogError("Load Fail");
+
+        UnityEditor.EditorApplication.isPaused = true;
+        UnityEditor.AssetDatabase.Refresh();
+    }
+
+    [ContextMenu("Load AssetBundle ASSET")]
+    public void LoadAssetBundleASSET()
+    {
+        var assetBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "Resources/assetbundle_asset"));
+
+        UnityEngine.Profiling.Profiler.BeginSample("Load AssetBundle ASSET");
+        var data = ScriptableObjectDataClass.LoadFromASSETAssetBundle(assetBundle);
+        UnityEngine.Profiling.Profiler.EndSample();
+        if (data == null) Debug.LogError("Load Fail");
+
+        UnityEditor.EditorApplication.isPaused = true;
+        UnityEditor.AssetDatabase.Refresh();
+    }
+
+    [ContextMenu("Load AssetBundle XML (XMLDocument)")]
+    public void LoadAssetBundleXML1()
+    {
+        var assetBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "Resources/assetbundle_xml1"));
+
+        UnityEngine.Profiling.Profiler.BeginSample("Load AssetBundle XML (XMLDocument)");
+        var data = XmlSerializationDataClass.LoadFromXMLAssetBundle_XMLDocument(assetBundle);
+        UnityEngine.Profiling.Profiler.EndSample();
+        if (data == null) Debug.LogError("Load Fail");
+
+        UnityEditor.EditorApplication.isPaused = true;
+        UnityEditor.AssetDatabase.Refresh();
+    }
+
+    [ContextMenu("Load AssetBundle XML (XMLDocument)")]
+    public void LoadAssetBundleXML2()
+    {
+        var assetBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Application.dataPath, "Resources/assetbundle_xml2"));
+
+        UnityEngine.Profiling.Profiler.BeginSample("Load AssetBundle XML (Serializer)");
+        var data = XmlSerializationDataClass.LoadFromXMLAssetBundle_Serializer(assetBundle);
+        UnityEngine.Profiling.Profiler.EndSample();
+        if (data == null) Debug.LogError("Load Fail");
+
+        UnityEditor.EditorApplication.isPaused = true;
+        UnityEditor.AssetDatabase.Refresh();
     }
 #endif
 }

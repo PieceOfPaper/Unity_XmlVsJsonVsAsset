@@ -36,14 +36,14 @@ public class XmlSerializationSkillData
 [System.Xml.Serialization.XmlRoot("XmlSerializationDataClass")]
 public class XmlSerializationDataClass
 {
-    [System.Xml.Serialization.XmlAttribute("m_Name")] public string m_Name;
+    [System.Xml.Serialization.XmlAttribute("m_MyName")] public string m_MyName;
     [System.Xml.Serialization.XmlAttribute("m_Level")] public int m_Level;
     public Vector3 m_Position;
     public Quaternion m_Rotation;
     [System.Xml.Serialization.XmlAttribute("m_Height")] public float m_Height;
     [System.Xml.Serialization.XmlArray("m_Skills"), System.Xml.Serialization.XmlArrayItem("XmlSerializationSkillData")] public XmlSerializationSkillData[] m_Skills;
 
-    public string Name => m_Name;
+    public string MyName => m_MyName;
     public int Level => m_Level;
     public Vector3 Position => m_Position;
     public Quaternion Rotation => m_Rotation;
@@ -100,7 +100,7 @@ public class XmlSerializationDataClass
 
     public void CreateDummy()
     {
-        m_Name = "¡æ¿’¿Â";
+        m_MyName = "¡æ¿’¿Â";
         m_Level = 33;
         m_Position = new Vector3(1.2f, 3.8f, 19.2f);
         m_Rotation = Quaternion.Euler(113.2f, 35.5f, 2f);
@@ -122,7 +122,7 @@ public class XmlSerializationDataClass
         var rootNode = xmlDocument.CreateNode(System.Xml.XmlNodeType.Element, "Root", string.Empty);
         var rootElement = rootNode as System.Xml.XmlElement;
 
-        rootElement.SetAttribute("m_Name", obj.m_Name);
+        rootElement.SetAttribute("m_Name", obj.m_MyName);
         rootElement.SetAttribute("m_Level", obj.m_Level.ToString());
         rootElement.SetAttribute("m_Position", obj.Position_Surrogate);
         rootElement.SetAttribute("m_Rotation", obj.Rotation_Surrogate);
@@ -138,21 +138,19 @@ public class XmlSerializationDataClass
             rootNode.AppendChild(skillDataNode);
         }
 
-        xmlDocument.Save(System.IO.Path.Combine(Application.dataPath, "Resources/Data1.xml"));
+        xmlDocument.Save(System.IO.Path.Combine(Application.dataPath, "Resources/data_xml1.xml"));
     }
 
     public static void SaveToXML_Serializer(XmlSerializationDataClass obj)
     {
         var serializer = new System.Xml.Serialization.XmlSerializer(typeof(XmlSerializationDataClass));
-        var stream = new System.IO.FileStream(System.IO.Path.Combine(Application.dataPath, "Resources/Data2.xml"), System.IO.FileMode.Create);
+        var stream = new System.IO.FileStream(System.IO.Path.Combine(Application.dataPath, "Resources/data_xml2.xml"), System.IO.FileMode.Create);
         serializer.Serialize(stream, obj);
         stream.Close();
     }
 
-    public static XmlSerializationDataClass LoadFromXML_XMLDocument()
+    private static XmlSerializationDataClass LoadXMLDocument(TextAsset textAsset)
     {
-        var textAsset = Resources.Load<TextAsset>("Data1.xml");
-        if (textAsset == null) return null;
         XmlSerializationDataClass data = new XmlSerializationDataClass();
         using (var stream = new System.IO.MemoryStream(textAsset.bytes))
         {
@@ -167,7 +165,7 @@ public class XmlSerializationDataClass
                     var rootElement = node as System.Xml.XmlElement;
                     if (rootElement == null) continue;
 
-                    data.m_Name = rootElement.GetAttribute("m_Name");
+                    data.m_MyName = rootElement.GetAttribute("m_Name");
                     data.m_Level = int.Parse(rootElement.GetAttribute("m_Level"));
                     data.Position_Surrogate = rootElement.GetAttribute("m_Position");
                     data.Rotation_Surrogate = rootElement.GetAttribute("m_Rotation");
@@ -197,9 +195,78 @@ public class XmlSerializationDataClass
         return data;
     }
 
+    public static XmlSerializationDataClass LoadFromXML_XMLDocument()
+    {
+        var textAsset = Resources.Load<TextAsset>("data_xml1");
+        if (textAsset == null) return null;
+        return LoadXMLDocument(textAsset);
+    }
+
     public static XmlSerializationDataClass LoadFromXML_Serializer()
     {
-        var textAsset = Resources.Load<TextAsset>("Data2.xml");
+        var textAsset = Resources.Load<TextAsset>("data_xml2");
+        if (textAsset == null) return null;
+        XmlSerializationDataClass data;
+        using (var stream = new System.IO.MemoryStream(textAsset.bytes))
+        {
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(XmlSerializationDataClass));
+            data = serializer.Deserialize(stream) as XmlSerializationDataClass;
+        }
+        return data;
+    }
+
+    public static void XMLToAssetBundle_XMLDocument()
+    {
+#if UNITY_EDITOR
+        UnityEditor.AssetBundleBuild[] bundles = new UnityEditor.AssetBundleBuild[]
+        {
+            new UnityEditor.AssetBundleBuild()
+            {
+                assetBundleName = "assetbundle_xml1",
+                assetNames = new string[]
+                {
+                    "Assets/Resources/data_xml1.xml",
+                }
+            }
+        };
+        UnityEditor.BuildPipeline.BuildAssetBundles("Assets/Resources", bundles, UnityEditor.BuildAssetBundleOptions.None, UnityEditor.EditorUserBuildSettings.activeBuildTarget);
+#endif
+    }
+
+    public static void XMLToAssetBundle_Serializer()
+    {
+#if UNITY_EDITOR
+        UnityEditor.AssetBundleBuild[] bundles = new UnityEditor.AssetBundleBuild[]
+        {
+            new UnityEditor.AssetBundleBuild()
+            {
+                assetBundleName = "assetbundle_xml2",
+                assetNames = new string[]
+                {
+                    "Assets/Resources/data_xml2.xml",
+                }
+            }
+        };
+        UnityEditor.BuildPipeline.BuildAssetBundles("Assets/Resources", bundles, UnityEditor.BuildAssetBundleOptions.None, UnityEditor.EditorUserBuildSettings.activeBuildTarget);
+#endif
+    }
+
+    public static XmlSerializationDataClass LoadFromXMLAssetBundle_XMLDocument(AssetBundle assetBundle)
+    {
+        //var assetBundle = Resources.Load<AssetBundle>("assetbundle_xml1");
+        if (assetBundle == null) return null;
+
+        var textAsset = assetBundle.LoadAsset<TextAsset>("data_xml1");
+        if (textAsset == null) return null;
+        return LoadXMLDocument(textAsset);
+    }
+
+    public static XmlSerializationDataClass LoadFromXMLAssetBundle_Serializer(AssetBundle assetBundle)
+    {
+        //var assetBundle = Resources.Load<AssetBundle>("assetbundle_xml2");
+        if (assetBundle == null) return null;
+
+        var textAsset = assetBundle.LoadAsset<TextAsset>("data_xml2");
         if (textAsset == null) return null;
         XmlSerializationDataClass data;
         using (var stream = new System.IO.MemoryStream(textAsset.bytes))

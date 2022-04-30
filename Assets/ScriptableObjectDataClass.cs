@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class ScriptableObjectDataClass : ScriptableObject
 {
-    [SerializeField] string m_Name;
+    [SerializeField] string m_MyName;
     [SerializeField] int m_Level;
     [SerializeField] Vector3 m_Position;
     [SerializeField] Quaternion m_Rotation;
     [SerializeField] float m_Height;
     [SerializeField] SkillData[] m_Skills;
 
-    public string Name => m_Name;
+    public string MyName => m_MyName;
     public int Level => m_Level;
     public Vector3 Position => m_Position;
     public Quaternion Rotation => m_Rotation;
@@ -50,7 +50,7 @@ public class ScriptableObjectDataClass : ScriptableObject
 
     public void CreateDummy()
     {
-        m_Name = "¡æ¿’¿Â";
+        m_MyName = "¡æ¿’¿Â";
         m_Level = 33;
         m_Position = new Vector3(1.2f, 3.8f, 19.2f);
         m_Rotation = Quaternion.Euler(113.2f, 35.5f, 2f);
@@ -67,13 +67,39 @@ public class ScriptableObjectDataClass : ScriptableObject
     public static void SaveToASSET(ScriptableObjectDataClass obj)
     {
 #if UNITY_EDITOR
-        UnityEditor.AssetDatabase.CreateAsset(obj, "Assets/Resources/Data.asset");
+        UnityEditor.AssetDatabase.CreateAsset(obj, "Assets/Resources/data_asset.asset");
         UnityEditor.AssetDatabase.Refresh();
 #endif
     }
 
     public static ScriptableObjectDataClass LoadFromASSET()
     {
-        return Resources.Load<ScriptableObjectDataClass>("Data.asset");
+        return Resources.Load<ScriptableObjectDataClass>("data_asset");
+    }
+
+    public static void ASSETToAssetBundle()
+    {
+#if UNITY_EDITOR
+        UnityEditor.AssetBundleBuild[] bundles = new UnityEditor.AssetBundleBuild[]
+        {
+            new UnityEditor.AssetBundleBuild()
+            {
+                assetBundleName = "assetbundle_asset",
+                assetNames = new string[]
+                {
+                    "Assets/Resources/data_asset.asset",
+                }
+            }
+        };
+        UnityEditor.BuildPipeline.BuildAssetBundles("Assets/Resources", bundles, UnityEditor.BuildAssetBundleOptions.None, UnityEditor.EditorUserBuildSettings.activeBuildTarget);
+#endif
+    }
+
+    public static ScriptableObjectDataClass LoadFromASSETAssetBundle(AssetBundle assetBundle)
+    {
+        //var assetBundle = Resources.Load<AssetBundle>("assetbundle_asset");
+        if (assetBundle == null) return null;
+
+        return assetBundle.LoadAsset<ScriptableObjectDataClass>("data_asset");
     }
 }

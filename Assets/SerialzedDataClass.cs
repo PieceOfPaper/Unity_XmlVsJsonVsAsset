@@ -5,14 +5,14 @@ using UnityEngine;
 [System.Serializable]
 public class SerialzedDataClass
 {
-    [SerializeField] string m_Name;
+    [SerializeField] string m_MyName;
     [SerializeField] int m_Level;
     [SerializeField] Vector3 m_Position;
     [SerializeField] Quaternion m_Rotation;
     [SerializeField] float m_Height;
     [SerializeField] SkillData[] m_Skills;
 
-    public string Name => m_Name;
+    public string MyName => m_MyName;
     public int Level => m_Level;
     public Vector3 Position => m_Position;
     public Quaternion Rotation => m_Rotation;
@@ -51,7 +51,7 @@ public class SerialzedDataClass
 
     public void CreateDummy()
     {
-        m_Name = "¡æ¿’¿Â";
+        m_MyName = "¡æ¿’¿Â";
         m_Level = 33;
         m_Position = new Vector3(1.2f, 3.8f, 19.2f);
         m_Rotation = Quaternion.Euler(113.2f, 35.5f, 2f);
@@ -68,12 +68,40 @@ public class SerialzedDataClass
     public static void SaveToJSON(SerialzedDataClass obj)
     {
         var str = JsonUtility.ToJson(obj, true);
-        System.IO.File.WriteAllText(System.IO.Path.Combine(Application.dataPath, "Resources/Data.json"), str);
+        System.IO.File.WriteAllText(System.IO.Path.Combine(Application.dataPath, "Resources/data_json.json"), str);
     }
 
     public static SerialzedDataClass LoadFromJSON()
     {
-        var textAsset = Resources.Load<TextAsset>("Data.json");
+        var textAsset = Resources.Load<TextAsset>("data_json");
+        if (textAsset == null) return null;
+        return JsonUtility.FromJson<SerialzedDataClass>(textAsset.text);
+    }
+
+    public static void JSONToAssetBundle()
+    {
+#if UNITY_EDITOR
+        UnityEditor.AssetBundleBuild[] bundles = new UnityEditor.AssetBundleBuild[]
+        {
+            new UnityEditor.AssetBundleBuild()
+            {
+                assetBundleName = "assetbundle_json",
+                assetNames = new string[]
+                {
+                    "Assets/Resources/data_json.json",
+                }
+            }
+        };
+        UnityEditor.BuildPipeline.BuildAssetBundles("Assets/Resources", bundles, UnityEditor.BuildAssetBundleOptions.None, UnityEditor.EditorUserBuildSettings.activeBuildTarget);
+#endif
+    }
+
+    public static SerialzedDataClass LoadFromJSONAssetBundle(AssetBundle assetBundle)
+    {
+        //var assetBundle = Resources.Load<AssetBundle>("assetbundle_json");
+        if (assetBundle == null) return null;
+
+        var textAsset = assetBundle.LoadAsset<TextAsset>("data_json");
         if (textAsset == null) return null;
         return JsonUtility.FromJson<SerialzedDataClass>(textAsset.text);
     }
